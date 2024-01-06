@@ -1,7 +1,7 @@
 namespace Knot.API.Container;
 
 public record ContainerResponse(
-  Guid Id,
+  string Id,
   string Name,
   string Image,
   DateTime StartTime

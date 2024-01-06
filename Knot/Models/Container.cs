@@ -1,21 +1,25 @@
+using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace Knot.Models;
 
 public class Container
 {
-  public Guid Id { get; }
-  public string ContainerId { get; }
-  public string Name { get; }
-  public string Image { get; }
-  public DateTime StartTime { get; }
+  [BsonId]
+  [BsonRepresentation(BsonType.ObjectId)]
+  public string Id { get; set; } = string.Empty;
+  public string ContainerId { get; set; }
+  public string Name { get; set; }
+  public string Image { get; set; }
+  public DateTime StartTime { get; set; }
 
   public Container(
-    Guid id,
     string containerId,
     string name,
     string image,
     DateTime startTime)
   {
-    Id = id;
     ContainerId = containerId;
     Name = name;
     Image = image;
