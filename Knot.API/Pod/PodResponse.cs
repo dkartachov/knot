@@ -3,7 +3,7 @@ using Knot.API.Container;
 namespace Knot.API.Pod;
 
 public record PodResponse(
-  Guid Guid,
+  string Id,
   string Name,
   IList<ContainerResponse> Containers
 );

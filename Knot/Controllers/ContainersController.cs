@@ -8,7 +8,9 @@ namespace Knot.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ContainersController(IContainerRuntime containerRuntime, IContainersService containersService) : ControllerBase
+public class ContainersController(
+  IContainerRuntime containerRuntime,
+  IContainersService containersService) : ControllerBase
 {
   private readonly IContainerRuntime containerRuntime = containerRuntime;
   private readonly IContainersService containersService = containersService;
@@ -76,7 +78,7 @@ public class ContainersController(IContainerRuntime containerRuntime, IContainer
       StartTime: container.StartTime
     );
 
-    return CreatedAtAction(nameof(GetContainer), new { id = container.Id }, response);
+    return CreatedAtAction(nameof(GetContainer), new { id = response.Id }, response);
   }
 
   [HttpDelete("{id:length(24)}")]
