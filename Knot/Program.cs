@@ -1,3 +1,4 @@
+using Knot.Hubs;
 using Knot.Options;
 using Knot.Services.ContainerRuntime;
 using Knot.Services.Containers;
@@ -9,6 +10,7 @@ builder.Services.Configure<MongoDBOptions>(builder.Configuration.GetSection(Mong
 builder.Services.AddSingleton<IContainersService, ContainersServiceMongoDB>();
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddScoped<IContainerRuntime, DockerRuntime>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +26,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.MapControllers();
+app.MapHub<ContainerLogsHub>("/logs");
 
 app.Run();

@@ -1,6 +1,9 @@
+using System.Buffers;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Knot.API.Container;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Knot.Services.ContainerRuntime;
 
@@ -49,5 +52,20 @@ public class DockerRuntime : IContainerRuntime
     }
 
     return true;
+  }
+
+  public async Task<MultiplexedStream> ContainerLogs(string id)
+  {
+    var containerLogsParameters = new ContainerLogsParameters
+    {
+      Tail = "10",
+      // Timestamps = true,
+      ShowStdout = true,
+      ShowStderr = true,
+      Follow = true,
+    };
+
+    // TODO extract ContainerLogsParameters from URL params
+    return await client.Containers.GetContainerLogsAsync(id, false, containerLogsParameters);
   }
 }
