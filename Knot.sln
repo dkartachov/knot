@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knot.API", "Knot.API\Knot.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knot", "Knot\Knot.csproj", "{F6297784-EC2B-4539-9FEC-F31FB276D895}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knot.CTL", "Knot.CTL\Knot.CTL.csproj", "{BF458239-2624-434B-8650-B6EBF1AF31AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{F6297784-EC2B-4539-9FEC-F31FB276D895}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6297784-EC2B-4539-9FEC-F31FB276D895}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6297784-EC2B-4539-9FEC-F31FB276D895}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF458239-2624-434B-8650-B6EBF1AF31AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF458239-2624-434B-8650-B6EBF1AF31AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF458239-2624-434B-8650-B6EBF1AF31AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF458239-2624-434B-8650-B6EBF1AF31AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
