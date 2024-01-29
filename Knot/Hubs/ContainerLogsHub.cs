@@ -1,4 +1,5 @@
-using System.Text;
+using System.Runtime.CompilerServices;
+using Knot.API.ContainerRuntime;
 using Knot.Services.ContainerRuntime;
 using Microsoft.AspNetCore.SignalR;
 
@@ -25,31 +26,18 @@ public class ContainerLogsHub(
     logger.LogInformation("Client {id} disconnected", Context.ConnectionId);
   }
 
-  public async Task SendContainerLogs(string id)
+  public async IAsyncEnumerable<string> StreamContainerLogs(
+    string containerId,
+    StreamContainerLogsRequest streamContainerLogsRequest,
+    [EnumeratorCancellation]
+    CancellationToken cancellationToken)
   {
-    try
+    await foreach (string log in containerRuntime.StreamContainerLogs(
+      containerId,
+      streamContainerLogsRequest,
+      cancellationToken))
     {
-      using var stream = await containerRuntime.ContainerLogs(id);
-
-      while (true)
-      {
-        // this should be more than enough for each log (?)
-        byte[] buffer = new byte[1024];
-        var result = await stream.ReadOutputAsync(buffer, 0, buffer.Length, Context.ConnectionAborted);
-
-        if (result.EOF) return;
-
-        string str = Encoding.Default.GetString(buffer).TrimEnd('\0');
-
-        Console.Write(str);
-
-        await Clients.Client(Context.ConnectionId).SendAsync("test", $"{str}");
-      }
-
-    }
-    catch (OperationCanceledException)
-    {
-      logger.LogInformation("Client {id} canceled container logs stream", Context.ConnectionId);
+      yield return log;
     }
   }
 }

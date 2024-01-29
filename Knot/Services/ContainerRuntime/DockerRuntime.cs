@@ -1,9 +1,9 @@
-using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Text;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Knot.API.Container;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+using Knot.API.ContainerRuntime;
 
 namespace Knot.Services.ContainerRuntime;
 
@@ -54,18 +54,33 @@ public class DockerRuntime : IContainerRuntime
     return true;
   }
 
-  public async Task<MultiplexedStream> ContainerLogs(string id)
+  public async IAsyncEnumerable<string> StreamContainerLogs(
+    string containerId,
+    StreamContainerLogsRequest streamContainerLogsRequest,
+    [EnumeratorCancellation] CancellationToken cancellationToken)
   {
     var containerLogsParameters = new ContainerLogsParameters
     {
-      Tail = "10",
-      // Timestamps = true,
-      ShowStdout = true,
-      ShowStderr = true,
-      Follow = true,
+      Tail = streamContainerLogsRequest.Tail,
+      ShowStdout = streamContainerLogsRequest.ShowStdout,
+      ShowStderr = streamContainerLogsRequest.ShowStderr,
+      Follow = streamContainerLogsRequest.Follow
     };
 
-    // TODO extract ContainerLogsParameters from URL params
-    return await client.Containers.GetContainerLogsAsync(id, false, containerLogsParameters);
+    using var multiplexedStream = await client.Containers.GetContainerLogsAsync(containerId, false, containerLogsParameters, cancellationToken);
+
+    while (true)
+    {
+      cancellationToken.ThrowIfCancellationRequested();
+
+      byte[] buffer = new byte[4096];
+      var result = await multiplexedStream.ReadOutputAsync(buffer, 0, buffer.Length, cancellationToken);
+
+      if (result.EOF) yield break;
+
+      var logLine = Encoding.UTF8.GetString(buffer).TrimEnd('\0');
+
+      yield return logLine;
+    }
   }
 }
