@@ -12,9 +12,86 @@ public abstract class Command
 
   public void Execute(string[] args)
   {
-    Walk(args);
+    List<string> commandArgsList = [];
 
-    string[] commandArgs = ParseArgs(args);
+    for (int i = 0; i < args.Length; i++)
+    {
+      string arg = args[i];
+
+      // TODO Maybe use regex? Right now any number of dashes will register as a flag e.g. ------image
+      if (arg.StartsWith('-'))
+      {
+        string flag = arg.TrimStart('-');
+
+        // TODO support alias
+        if (_FlagSet.Exists(flag))
+        {
+          switch (_FlagSet.GetFlag(flag).Type)
+          {
+            case Flag.TYPE.STRING:
+              if (i < args.Length - 1)
+              {
+                _FlagSet.SetString(flag, args[i + 1]);
+                i++;
+              }
+
+              break;
+            case Flag.TYPE.INT:
+              if (i < args.Length - 1 && int.TryParse(args[i + 1], out int intValue))
+              {
+                _FlagSet.SetInt(flag, intValue);
+                i++;
+              }
+              else
+              {
+                return;
+              }
+
+              break;
+            case Flag.TYPE.BOOL:
+              if (i + 1 < args.Length && bool.TryParse(args[i + 1], out bool boolValue))
+              {
+                _FlagSet.SetBool(flag, boolValue);
+                i++;
+              }
+              else
+              {
+                _FlagSet.SetBool(flag, true);
+              }
+
+              break;
+          }
+        }
+        else
+        {
+          // TODO print help for command
+          Console.WriteLine($"flag {flag} not supported for {Name}");
+          return;
+        }
+      }
+      else if (Commands.Count > 0)
+      {
+        if (Commands.Exists((c) => c.Name == arg || c.Alias == arg))
+        {
+          Command cmd = Commands.First((c) => c.Name == arg || c.Alias == arg);
+
+          cmd.Execute(args.Skip(i + 1).ToArray());
+
+          break;
+        }
+        else
+        {
+          Console.WriteLine($"subcommand {arg} not found for {Name}");
+          return;
+        }
+      }
+      else
+      {
+        commandArgsList.Add(arg);
+      }
+    }
+
+    string[] commandArgs = [.. commandArgsList];
 
     if (ValidateArgs(commandArgs))
     {
@@ -67,7 +144,6 @@ public abstract class Command
   /// <returns>command arguments</returns>
   private string[] ParseArgs(string[] args)
   {
-    // TODO override flags
     List<string> commandArgsList = [];
 
     for (int i = 0; i < args.Length; i++)

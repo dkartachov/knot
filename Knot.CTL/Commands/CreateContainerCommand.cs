@@ -6,8 +6,7 @@ public class CreateContainerCommand : Command
   {
     Name = "container";
 
-    Flags().String("image", "", "");
-    // Flags().Int("limit", "", 0);
+    Flags().String("image", "i", "");
   }
 
   protected override bool ValidateArgs(string[] args)
@@ -23,10 +22,8 @@ public class CreateContainerCommand : Command
   protected override void Run(string[] args)
   {
     string image = Flags().GetString("image");
-    // int limit = Flags().GetInt("limit");
 
     Console.WriteLine($"args are: {string.Join(' ', args)}");
     Console.WriteLine($"image is: {image}");
-    // Console.WriteLine($"limit is: {limit}");
   }
 }

@@ -77,13 +77,28 @@ public class FlagSet
     return Flags.TryGetValue(name, out Flag value) ? int.Parse(value.Value) : 0;
   }
 
+  public void SetBool(string flag, bool value)
+  {
+    if (Flags.TryGetValue(flag, out Flag f) && f.Type == Flag.TYPE.BOOL)
+    {
+      f.Value = value.ToString();
+
+      Flags[flag] = f;
+    }
+  }
+
   public bool GetBool(string name)
   {
     return Flags.TryGetValue(name, out Flag value) && bool.Parse(value.Value);
   }
 
-  public bool Exists(string name)
+  public bool Exists(string flag)
   {
-    return Flags.ContainsKey(name);
+    foreach (KeyValuePair<string, Flag> entry in Flags)
+    {
+      if (entry.Key == flag || entry.Value.Alias == flag) return true;
+    }
+
+    return false;
   }
 }
