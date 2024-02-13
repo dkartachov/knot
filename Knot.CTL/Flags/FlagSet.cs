@@ -54,7 +54,12 @@ public class FlagSet
 
   public string GetString(string name)
   {
-    return Flags.TryGetValue(name, out Flag value) ? value.Value : "";
+    if (Flags.TryGetValue(name, out Flag value) && value.Value != null)
+    {
+      return value.Value;
+    }
+
+    return "";
   }
 
   public void SetInt(string name, int value)

@@ -78,7 +78,6 @@ public abstract class Command
       {
         string flag = arg.TrimStart('-');
 
-        // TODO Support bool flags (?)
         if (i < args.Length - 1 && _FlagSet.Exists(flag))
         {
           Flag f = _FlagSet.GetFlag(flag);
@@ -92,12 +91,13 @@ public abstract class Command
               _FlagSet.SetInt(flag, int.Parse(args[i + 1]));
               break;
             case Flag.TYPE.BOOL:
+              // TODO
               break;
           }
 
-          // advance to prevent adding flag parameter to command args list
-          i++;
         }
+        // advance to prevent adding flag parameter to command args list
+        i++;
       }
       else
       {
