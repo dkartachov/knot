@@ -18,7 +18,7 @@ public abstract class Command
     {
       string arg = args[i];
 
-      // TODO Maybe use regex? Right now any number of dashes will register as a flag e.g. ------image
+      // TODO Maybe use regex? Right now any number of dashes will register as a flag e.g.: ------image
       if (arg.StartsWith('-'))
       {
         string flag = arg.TrimStart('-');
