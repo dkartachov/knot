@@ -95,7 +95,9 @@ public abstract class Command
 
     if (ValidateArgs(commandArgs))
     {
+      // TODO find a way to run one or the other based on which method is implemented in derived class
       Run(commandArgs);
+      RunAsync(commandArgs).Wait();
     }
   }
 
@@ -112,75 +114,5 @@ public abstract class Command
 
   protected virtual bool ValidateArgs(string[] args) { return true; }
   protected virtual void Run(string[] args) { }
-
-  /// <summary>
-  /// Walks through arguments to find subcommands and executes the subcommands
-  /// </summary>
-  /// <param name="args"></param>
-  private void Walk(string[] args)
-  {
-    if (args.Length > 0)
-    {
-      string arg = args[0];
-
-      // Check if arg is a sub command
-      foreach (Command cmd in Commands)
-      {
-        if (cmd.Name == arg || cmd.Alias == arg)
-        {
-          cmd.Execute(args.Skip(1).ToArray());
-
-          return;
-        }
-      }
-    }
-  }
-
-  /// <summary>
-  /// Parses args to extract command arguments and flags. 
-  /// Saves flag values to flagset and returns command arguments
-  /// </summary>
-  /// <param name="args"></param>
-  /// <returns>command arguments</returns>
-  private string[] ParseArgs(string[] args)
-  {
-    List<string> commandArgsList = [];
-
-    for (int i = 0; i < args.Length; i++)
-    {
-      string arg = args[i];
-
-      if (arg.StartsWith('-'))
-      {
-        string flag = arg.TrimStart('-');
-
-        if (i < args.Length - 1 && _FlagSet.Exists(flag))
-        {
-          Flag f = _FlagSet.GetFlag(flag);
-
-          switch (f.Type)
-          {
-            case Flag.TYPE.STRING:
-              _FlagSet.SetString(flag, args[i + 1]);
-              break;
-            case Flag.TYPE.INT:
-              _FlagSet.SetInt(flag, int.Parse(args[i + 1]));
-              break;
-            case Flag.TYPE.BOOL:
-              // TODO
-              break;
-          }
-
-        }
-        // advance to prevent adding flag parameter to command args list
-        i++;
-      }
-      else
-      {
-        commandArgsList.Add(arg);
-      }
-    }
-
-    return [.. commandArgsList];
-  }
+  protected virtual Task RunAsync(string[] args) { return Task.CompletedTask; }
 }

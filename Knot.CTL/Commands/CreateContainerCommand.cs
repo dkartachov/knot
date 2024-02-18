@@ -1,3 +1,9 @@
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Knot.API.Container;
+using Knot.CTL.Services;
+
 namespace Knot.CTL.Commands;
 
 public class CreateContainerCommand : Command
@@ -16,14 +22,47 @@ public class CreateContainerCommand : Command
       Console.WriteLine("container name required");
       return false;
     }
+
+    if (args.Length > 1)
+    {
+      Console.WriteLine("expected 1 argument");
+      return false;
+    }
+
     return true;
   }
 
-  protected override void Run(string[] args)
+  protected override async Task RunAsync(string[] args)
   {
     string image = Flags().GetString("image");
 
-    Console.WriteLine($"args are: {string.Join(' ', args)}");
-    Console.WriteLine($"image is: {image}");
+    if (image.Length == 0)
+    {
+      Console.WriteLine("image required");
+      return;
+    }
+
+    var createContainerRequest = new CreateContainerRequest
+    (
+      name: args[0],
+      image: image
+    );
+
+    try
+    {
+      ContainerResponse? containerResponse = await new KnotHttpClient().CreateContainer(createContainerRequest);
+
+      if (containerResponse == null)
+      {
+        Console.WriteLine("error creating container");
+        return;
+      }
+
+      Console.WriteLine($"created and started container {containerResponse.Name}");
+    }
+    catch (HttpRequestException e)
+    {
+      Console.WriteLine(e.Message);
+    }
   }
 }

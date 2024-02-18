@@ -5,9 +5,9 @@ namespace Knot.API.Container;
 public record CreateContainerRequest
 {
   [DefaultValue("container-1")]
-  public string Name { get; }
+  public string Name { get; set; }
   [DefaultValue("strm/helloworld-http")]
-  public string Image { get; }
+  public string Image { get; set; }
 
   public CreateContainerRequest(string name, string image)
   {
